@@ -9,7 +9,7 @@
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.9/angular.min.js"></script>
 	<style>
 		.jumbotron {
-			width: 400px;
+			width: 600px;
 			margin-top: 20px;
 			text-align: center;
 			margin-left: auto;
@@ -31,19 +31,19 @@
 	</style>
 	<script>
 		angular.module("listaTelefonica",[]);
-		angular.module("listaTelefonica").controller("listaTelefonicaCtrl", function($scope) {
-			$scope.app = "Lista TelefÃ´nica";
+		angular.module("listaTelefonica").controller("listaTelefonicaCtrl", function($scope, $http) {
+			$scope.app = "Lista Telefonica";
 			$scope.contatos = [
-				{nome: "Pedro", telefone: "993482903"},
-				{nome: "Ana", telefone: "994329555"},
-				{nome: "Maria", telefone: "9934844403"}
+				{nome: "Pedro", telefone: "993482903", data:new Date(), operadora: {nome: "Oi", codigo: 14, categoria: "Celular", preco: 1}},
+				{nome: "Ana", telefone: "994329555", data:new Date(), operadora: {nome: "Vivo", codigo: 15, categoria: "Celular", preco: 5}},
+				{nome: "Maria", telefone: "9934844403", data:new Date(), operadora:{nome: "GVT", codigo: 25, categoria: "Fixo", preco: 9}}
 			];
 			$scope.operadoras = [
-				{nome: "Oi", codigo: 14, categoria: "Celular"},
-				{nome: "Vivo", codigo: 15, categoria: "Celular"},
-				{nome: "Tim", codigo: 41, categoria: "Celular"},
-				{nome: "GVT", codigo: 25, categoria: "Fixo"},
-				{nome: "Embratel", codigo: 21, categoria: "Fixo"}
+				{nome: "Oi", codigo: 14, categoria: "Celular", preco: 1},
+				{nome: "Vivo", codigo: 15, categoria: "Celular", preco: 5},
+				{nome: "Tim", codigo: 41, categoria: "Celular", preco: 7},
+				{nome: "GVT", codigo: 25, categoria: "Fixo", preco: 9},
+				{nome: "Embratel", codigo: 21, categoria: "Fixo", preco: 6}
 			];
 			$scope.adicionarContato = function (contato) {
 				$scope.contatos.push(angular.copy(contato));
@@ -59,35 +59,42 @@
 					return contato.selecionado;
 				});
 			};
+			$scope.ordenarPor = function(campo) {
+				$scope.criterioDeOrdenacao = campo;
+				$scope.direcaoDaOrdenacao = !$scope.direcaoDaOrdenacao;
+			};
 		});
 	</script>
 </head>
 <body ng-controller="listaTelefonicaCtrl">
 	<div class="jumbotron">
 		<h3>{{app}}</h3>
-		<table class="table">
+		<input class="form-control" type="text" ng-model="criterioDeBusca" placeholder="O que você está buscando?" />
+		<table ng-show="contatos.length > 0" class="table table-striped">
 			<thead>
 				<tr>
-					<th>Nome</th>
-					<th>Telefone</th>
+					<th></th>
+					<th><a href="" ng-click="ordenarPor('nome')">Nome</a></th>
+					<th><a href="" ng-click="ordenarPor('telefone')">Telefone</a></th>
 					<th>Operadora</th>
+					<th>Data</th>
 
 				</tr>
 			</thead>
 			<tbody>
-				<tr ng-class="{selecionado: contato.selecionado, negrito: contato.selecionado}" ng-repeat="contato in contatos">
+				<tr ng-class="{selecionado: contato.selecionado, negrito: contato.selecionado}" ng-repeat="contato in contatos | filter:criterioDeBusca | orderBy:criterioDeOrdenacao:direcaoDaOrdenacao">
 					<td><input type="checkbox" ng-model="contato.selecionado" /></td>
 					<td>{{contato.nome}}</td>
 					<td>{{contato.telefone}}</td>
 					<td>{{contato.operadora.nome}}</td>
+					<td>{{contato.data | date: 'dd/MM/yyyy HH:mm'}}</td>
 				</tr>
 			</tbody>
 		</table>
-		{{contatoForm.$valid}}
 		<form name="contatoForm">
 			<input class="form-control" type="text" ng-model="contato.nome" placeholder="Nome" ng-required="true"/>
 			<input class="form-control" type="text" ng-model="contato.telefone" placeholder="Telefone" ng-required="true"/>
-			<select class="form-control" ng-model="contato.operadora" ng-options="operadora.nome group by operadora.categoria for operadora in operadoras">
+			<select class="form-control" ng-model="contato.operadora" ng-options="operadora.nome + ' (' + (operadora.preco | currency ) + ') ' group by operadora.categoria for operadora in operadoras">
 				<option  value="">Selecione uma operadora</option>
 			</select>
 		</form>
