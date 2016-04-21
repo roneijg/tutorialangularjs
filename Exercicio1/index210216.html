@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html ng-app="listaTelefonica">
+<head>
+	<title>Lista Telefonica</title>
+ 	<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+  	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+  	<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.9/angular.min.js"></script>
+	<style>
+		.jumbotron {
+			width: 400px;
+			margin-top: 20px;
+			text-align: center;
+			margin-left: auto;
+			margin-right: auto;
+		}
+		.table {
+			margin-top: 20px;
+			text-align: left;
+		}
+		.form-control {
+			margin-bottom: 5px;
+		}
+	</style>
+	<script>
+		angular.module("listaTelefonica",[]);
+		angular.module("listaTelefonica").controller("listaTelefonicaCtrl", function($scope) {
+			$scope.app = "Lista Telefônica";
+			$scope.contatos = [
+				{nome: "Pedro", telefone: "993482903"},
+				{nome: "Ana", telefone: "994329555"},
+				{nome: "Maria", telefone: "9934844403"}
+			];
+			$scope.adicionarContato = function (contato) {
+				$scope.contatos.push(angular.copy(contato));
+				delete $scope.contato;
+			};
+		});
+		$(function () {
+		  $('[data-toggle="tooltip"]').tooltip()
+		});
+	</script>
+</head>
+<body ng-controller="listaTelefonicaCtrl">
+	<div class="jumbotron">
+		<h4>{{app}}</h4>
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					<th>Nome</th>
+					<th>Telefone</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat="contato in contatos">
+					<td>{{contato.nome}}</td>
+					<td>{{contato.telefone}}</td>
+				</tr>
+			</tbody>
+		</table>
+		<input class="form-control" type="text" ng-model="contato.nome" placeholder="Nome" />
+		<input class="form-control" type="text" ng-model="contato.telefone" placeholder="Telefone" />
+		<button class="btn btn-primary btn-block" ng-click="adicionarContato(contato)" data-toggle="tooltip" data-placement="right" title="Clique aqui para adicionar um contato...">Adicionar Contato</button>
+	</div>
+</body>
+</html>
